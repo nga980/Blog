@@ -40,42 +40,6 @@ This project is a Laravel-based web application with an admin dashboard and post
 - Manual testing is recommended for UI components.
 - Backend tests can be run using `php artisan test`.
 
-## How to Push Project to GitHub
-
-1. Initialize git repository (if not already):
-   ```
-   git init
-   ```
-
-2. Add all files to staging:
-   ```
-   git add .
-   ```
-
-3. Commit changes:
-   ```
-   git commit -m "Initial commit"
-   ```
-
-4. Create a new repository on GitHub.
-
-5. Add remote origin (replace URL with your repo URL):
-   ```
-   git remote add origin https://github.com/your-username/your-repo.git
-   ```
-
-6. Push to GitHub:
-   ```
-   git push -u origin main
-   ```
-
-7. For subsequent changes, use:
-   ```
-   git add .
-   git commit -m "Your message"
-   git push
-   ```
-
 ## Contact
 
 For any issues or contributions, please contact the project maintainer.

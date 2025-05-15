@@ -12,10 +12,11 @@ class PostController extends Controller
     /**
      * Display a listing of the posts.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $posts = Post::latest()->paginate(10);
-        return view('admin.posts.index', compact('posts'));
+        $posts = Post::latest()->get();
+        $perPage = 10; // default perPage for DataTables page length
+        return view('admin.posts.index', compact('posts', 'perPage'));
     }
 
     /**
@@ -40,6 +41,9 @@ class PostController extends Controller
         ]);
 
         $data = $request->only(['title', 'short_description', 'content']);
+        $data['user_id'] = auth()->id();
+        $data['author_name'] = auth()->user()->name ?? null;
+        $data['author_name'] = auth()->user()->name ?? null;
 
         if ($request->hasFile('banner')) {
             $bannerPath = $request->file('banner')->store('banners', 'public');
@@ -93,6 +97,7 @@ class PostController extends Controller
         ]);
 
         $data = $request->only(['title', 'short_description', 'content']);
+        $data['user_id'] = auth()->id();
 
         if ($request->hasFile('banner')) {
             if ($post->banner) {

@@ -16,6 +16,8 @@ class Post extends Model
         'content',
         'banner',
         'gallery',
+        'user_id',
+        'author_name',
     ];
 
     public function author()
