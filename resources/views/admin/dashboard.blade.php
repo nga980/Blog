@@ -6,18 +6,18 @@
         <!-- Thống kê -->
         <div class="row mb-4 justify-content-center g-3">
             <div class="col-auto">
-                <div class="card bg-primary text-white shadow-sm rounded-4 p-2" style="min-width: 180px; max-height: 100px;">
-                    <div class="card-body text-center p-2 d-flex flex-column justify-content-center" style="height: 100px;">
-                        <h6 class="card-title mb-2"><i class="fas fa-users me-2"></i>Tổng người dùng</h6>
-                        <p class="card-text fs-3 fw-semibold mb-0">{{ $userCount ?? 0 }}</p>
+                <div class="card text-white shadow-sm rounded-4 p-2" style="min-width: 160px; max-height: 90px; background: #4e73df;">
+                    <div class="card-body text-center p-2 d-flex flex-column justify-content-center" style="height: 90px;">
+                        <h6 class="card-title fs-6 mb-1"><i class="fas fa-users me-2"></i>Tổng người dùng</h6>
+                        <p class="card-text fs-4 fw-semibold mb-0">{{ $userCount ?? 0 }}</p>
                     </div>
                 </div>
             </div>
             <div class="col-auto">
-                <div class="card bg-success text-white shadow-sm rounded-4 p-2" style="min-width: 180px; max-height: 100px;">
-                    <div class="card-body text-center p-2 d-flex flex-column justify-content-center" style="height: 100px;">
-                        <h6 class="card-title mb-2"><i class="fas fa-file-alt me-2"></i>Tổng bài viết</h6>
-                        <p class="card-text fs-3 fw-semibold mb-0">{{ $postCount ?? 0 }}</p>
+                <div class="card text-white shadow-sm rounded-4 p-2" style="min-width: 160px; max-height: 90px; background: #1cc88a;">
+                    <div class="card-body text-center p-2 d-flex flex-column justify-content-center" style="height: 90px;">
+                        <h6 class="card-title fs-6 mb-1"><i class="fas fa-file-alt me-2"></i>Tổng bài viết</h6>
+                        <p class="card-text fs-4 fw-semibold mb-0">{{ $postCount ?? 0 }}</p>
                     </div>
                 </div>
             </div>

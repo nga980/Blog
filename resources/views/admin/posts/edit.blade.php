@@ -17,9 +17,9 @@
                 </div>
             @endif
 
-            <form action="{{ route('posts.update', $post) }}" method="POST" enctype="multipart/form-data">
-                @csrf
-                @method('PUT')
+<form action="{{ route('posts.update', $post) }}" method="POST" enctype="multipart/form-data" class="sweetalert-confirm-nochange">
+    @csrf
+    @method('PUT')
 
                 <div class="form-floating mb-3">
                     <input type="text" class="form-control" id="title" name="title" value="{{ old('title', $post->title) }}" placeholder="Tiêu đề" required>
@@ -89,6 +89,103 @@
     document.querySelector('form').addEventListener('submit', function () {
         document.querySelector('#content').value = editor.getData();
     });
+
+    // Detect unsaved changes and warn on page unload with SweetAlert2 modal
+    (function() {
+        let form = document.querySelector('form.sweetalert-confirm-nochange');
+        if (!form) return;
+
+        let initialData = {};
+        Array.from(form.elements).forEach(element => {
+            if (element.name && element.type !== 'file') {
+                if (element.type === 'checkbox' || element.type === 'radio') {
+                    initialData[element.name] = element.checked;
+                } else {
+                    initialData[element.name] = element.value;
+                }
+            }
+        });
+
+        let isChanged = false;
+
+        function checkChanges() {
+            isChanged = false;
+            Array.from(form.elements).forEach(element => {
+                if (element.name && element.type !== 'file') {
+                    let currentValue;
+                    if (element.type === 'checkbox' || element.type === 'radio') {
+                        currentValue = element.checked;
+                    } else {
+                        currentValue = element.value;
+                    }
+                    if (initialData[element.name] !== currentValue) {
+                        isChanged = true;
+                    }
+                } else if (element.type === 'file' && element.files.length > 0) {
+                    isChanged = true;
+                }
+            });
+        }
+
+        form.addEventListener('change', checkChanges);
+        form.addEventListener('input', checkChanges);
+
+        // Intercept navigation events to show SweetAlert2 modal
+        function confirmLeave(event) {
+            checkChanges();
+            if (!isChanged) return;
+
+            event.preventDefault();
+            event.stopPropagation();
+
+            Swal.fire({
+                title: 'Bạn có chắc muốn rời trang?',
+                text: 'Bạn có các thay đổi chưa lưu. Nếu rời đi, các thay đổi sẽ bị mất.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Rời trang',
+                cancelButtonText: 'Ở lại',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Remove event listeners to avoid infinite loop
+                    window.removeEventListener('beforeunload', beforeUnloadHandler);
+                    document.removeEventListener('click', clickHandler, true);
+                    window.location.href = event.target.href || event.target.closest("a")?.href || window.location.href;
+                }
+            });
+        }
+
+        // Handle beforeunload event to show default browser dialog as fallback
+        function beforeUnloadHandler(e) {
+            checkChanges();
+            if (isChanged) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        }
+
+        // Handle link clicks
+        function clickHandler(e) {
+            let target = e.target;
+            while (target && target !== document) {
+                if (target.tagName === 'A' && target.href) {
+                    confirmLeave(e);
+                    break;
+                }
+                target = target.parentNode;
+            }
+        }
+
+        window.addEventListener('beforeunload', beforeUnloadHandler);
+        document.addEventListener('click', clickHandler, true);
+
+        // Handle form submit to disable warning
+        form.addEventListener('submit', function() {
+            window.removeEventListener('beforeunload', beforeUnloadHandler);
+            document.removeEventListener('click', clickHandler, true);
+        });
+    })();
 
     function previewBanner(event) {
         const preview = document.getElementById('bannerPreview');

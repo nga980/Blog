@@ -6,15 +6,14 @@
         <div class="card shadow rounded-4 border-0">
             <div class="card-header d-flex justify-content-between align-items-center text-white rounded-top-4 px-4 py-3" style="background: linear-gradient(to right, #007bff, #0056b3);">
                 <h4 class="mb-0 fw-semibold"><i class="fa fa-list-alt me-2"></i>Danh sách bài viết</h4>
-                <a href="{{ route('posts.create') }}" class="btn btn-success btn-sm rounded-pill shadow-sm">
-                    <i class="fa fa-plus me-1"></i> Thêm bài viết
-                </a>
+                @auth
+                    <a href="{{ route('posts.create') }}" class="btn btn-success btn-sm rounded-pill shadow-sm" title="Thêm bài viết">
+                        <i class="fa fa-plus me-1"></i> Thêm bài viết
+                    </a>
+                @endauth
             </div>
             <div class="card-body p-4">
                 @if(session('success'))
-                    <div class="alert alert-success alert-dismissible fade show rounded-pill text-center fw-medium d-flex align-items-center justify-content-center gap-2" role="alert">
-                        <i class="fa fa-check-circle"></i> {{ session('success') }}
-                    </div>
                 @endif
 
                 <div class="mb-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
@@ -50,14 +49,20 @@
                                 <td>{{ $post->author->name ?? 'N/A' }}</td>
                                 <td>
                                     <div class="d-flex justify-content-center gap-1 flex-wrap">
-                                        <a href="{{ route('posts.show', $post) }}" class="btn btn-outline-info btn-sm rounded-pill" title="Xem bài viết"><i class="fa fa-eye"></i></a>
-                                        @if(Auth::user()->role === 'admin')
-                                        <a href="{{ route('posts.edit', $post) }}" class="btn btn-outline-warning btn-sm rounded-pill" title="Sửa bài viết"><i class="fa fa-edit"></i></a>
-<form action="{{ route('posts.destroy', $post) }}" method="POST" class="d-inline sweetalert-delete">
-    @csrf
-    @method('DELETE')
-    <button class="btn btn-outline-danger btn-sm rounded-pill" title="Xóa bài viết"><i class="fa fa-trash"></i></button>
-</form>
+                                        <a href="{{ route('posts.show', $post) }}" class="btn btn-outline-info btn-sm rounded-pill" title="Xem bài viết">
+                                            <i class="fa fa-eye"></i>
+                                        </a>
+                                        @if(Auth::check() && Auth::user()->role === 'admin')
+                                            <a href="{{ route('posts.edit', $post) }}" class="btn btn-outline-warning btn-sm rounded-pill" title="Sửa bài viết">
+                                                <i class="fa fa-edit"></i>
+                                            </a>
+                                            <form action="{{ route('posts.destroy', $post) }}" method="POST" class="d-inline sweetalert-delete" id="delete-post-{{ $post->id }}">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="button" class="btn btn-outline-danger btn-sm rounded-pill btn-delete-post" data-post-id="{{ $post->id }}" title="Xóa bài viết">
+                                                    <i class="fa fa-trash"></i>
+                                                </button>
+                                            </form>
                                         @endif
                                     </div>
                                 </td>
@@ -103,7 +108,6 @@
         margin-bottom: 15px;
     }
 
-    /* Icon kích thước cố định và căn giữa */
     .btn-sm i {
         width: 16px;
         height: 16px;
@@ -122,15 +126,14 @@
         margin: 0;
     }
 
-    /* Ensure all btn-outline icon buttons have consistent size and padding */
     .btn-outline-info.btn-sm,
     .btn-outline-warning.btn-sm,
     .btn-outline-danger.btn-sm {
-        width: 30px; /* 20% smaller than 38px */
-        height: 30px; /* 20% smaller than 38px */
+        width: 30px;
+        height: 30px;
         padding: 0;
         margin: 0 4px;
-        font-size: 14px; /* 20% smaller than 18px */
+        font-size: 14px;
         display: inline-flex;
         align-items: center;
         justify-content: center;
@@ -175,16 +178,15 @@
     .btn-outline-info.btn-sm i,
     .btn-outline-warning.btn-sm i,
     .btn-outline-danger.btn-sm i {
-        width: 16px; /* 20% smaller than 20px */
-        height: 16px; /* 20% smaller than 20px */
-        font-size: 16px; /* 20% smaller than 20px */
+        width: 16px;
+        height: 16px;
+        font-size: 16px;
         line-height: 16px;
         display: inline-block;
         vertical-align: middle;
         text-align: center;
     }
 </style>
-
 
 <script>
     $(document).ready(function () {
@@ -194,6 +196,7 @@
             pageLength: perPage,
             lengthChange: false,
             buttons: [
+                @if(Auth::check() && Auth::user()->isAdmin())
                 {
                     extend: 'excelHtml5',
                     text: '<i class="fa fa-file-excel"></i> Xuất Excel',
@@ -202,6 +205,7 @@
                         columns: ':not(:last-child)'
                     }
                 }
+                @endif
             ],
             language: {
                 search: "Tìm kiếm:",
@@ -222,9 +226,6 @@
             table.page.len(selected).draw();
         });
 
-        setTimeout(function () {
-            $('.alert-success').fadeOut('slow');
-        }, 2500);
     });
 </script>
 @endsection
