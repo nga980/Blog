@@ -32,7 +32,9 @@
                 </div>
 
                 <div class="mb-3">
-                    <label for="title" class="form-label fw-bold">Tiêu đề</label>
+                    <label for="title" class="form-label fw-bold d-flex align-items-center gap-1">
+                        Tiêu đề <span class="text-danger">*</span>
+                    </label>
                     <input type="text" class="form-control rounded" id="title" name="title" value="{{ old('title') }}" required maxlength="255">
                 </div>
 

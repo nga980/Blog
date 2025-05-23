@@ -7,6 +7,13 @@
             <h1 class="h4 mb-4 fw-bold text-primary">📄 Xem bài viết</h1>
 
             <div class="mb-4">
+                <label class="form-label fw-semibold text-muted">📂 Danh mục</label>
+                <div class="p-3 bg-light border rounded">
+                    {{ $post->category ? $post->category->title : 'Chưa có danh mục' }}
+                </div>
+            </div>
+
+            <div class="mb-4">
                 <label class="form-label fw-semibold text-muted">📝 Tiêu đề</label>
                 <div class="p-3 bg-light border rounded">{{ $post->title }}</div>
             </div>

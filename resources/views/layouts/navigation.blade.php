@@ -79,6 +79,9 @@
             <x-responsive-nav-link :href="route('posts.index')" :active="request()->routeIs('posts.index')">
                 {{ __('Quản lý bài viết') }}
             </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('categories.index')" :active="request()->routeIs('categories.index')">
+                {{ __('Quản lý danh mục') }}
+            </x-responsive-nav-link>
         </div>
 
         <!-- Responsive Settings Options -->

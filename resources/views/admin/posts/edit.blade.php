@@ -21,23 +21,40 @@
     @csrf
     @method('PUT')
 
+                <div class="mb-3">
+                    <label for="category_id" class="form-label fw-bold">Danh mục <span class="text-danger">*</span></label>
+                    <select class="form-select rounded" id="category_id" name="category_id" required>
+                        <option value="">-- Chọn danh mục --</option>
+                        @foreach ($categories as $parentCategory)
+                            <option value="{{ $parentCategory->id }}" {{ old('category_id', $post->category_id) == $parentCategory->id ? 'selected' : '' }}>
+                                {{ $parentCategory->title }}
+                            </option>
+                            @foreach ($parentCategory->children as $childCategory)
+                                <option value="{{ $childCategory->id }}" {{ old('category_id', $post->category_id) == $childCategory->id ? 'selected' : '' }}>
+                                    &nbsp;&nbsp;-- {{ $childCategory->title }}
+                                </option>
+                            @endforeach
+                        @endforeach
+                    </select>
+                </div>
+
                 <div class="form-floating mb-3">
                     <input type="text" class="form-control" id="title" name="title" value="{{ old('title', $post->title) }}" placeholder="Tiêu đề" required>
-                    <label for="title">Tiêu đề</label>
+                    <label for="title">Tiêu đề <span class="text-danger">*</span></label>
                 </div>
 
                 <div class="mb-3">
-                    <label for="short_description" class="form-label fw-semibold">Mô tả ngắn</label>
+                    <label for="short_description" class="form-label fw-semibold">Mô tả ngắn <span class="text-danger">*</span></label>
                     <textarea class="form-control" id="short_description" name="short_description" rows="3" placeholder="Mô tả ngắn">{{ old('short_description', $post->short_description) }}</textarea>
                 </div>
 
                 <div class="mb-3">
-                    <label for="content" class="form-label fw-semibold">Nội dung</label>
+                    <label for="content" class="form-label fw-semibold">Nội dung <span class="text-danger">*</span></label>
                     <textarea class="form-control" id="content" name="content">{{ old('content', $post->content) }}</textarea>
                 </div>
 
                 <div class="mb-3">
-                    <label for="banner" class="form-label fw-semibold">Ảnh banner</label>
+                    <label for="banner" class="form-label fw-semibold">Ảnh banner <span class="text-danger">*</span></label>
                     <input class="form-control" type="file" id="banner" name="banner" accept="image/*" onchange="previewBanner(event)">
                     <div class="mt-2">
                         <img id="bannerPreview" 

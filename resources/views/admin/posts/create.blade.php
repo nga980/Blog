@@ -20,28 +20,45 @@
                 @csrf
 
                 <div class="mb-3">
-                    <label for="title" class="form-label fw-bold">Tiêu đề</label>
+                    <label for="category_id" class="form-label fw-bold">Danh mục <span class="text-danger">*</span></label>
+                    <select class="form-select rounded" id="category_id" name="category_id" required>
+                        <option value="">-- Chọn danh mục --</option>
+                        @foreach ($categories as $parentCategory)
+                            <option value="{{ $parentCategory->id }}" {{ old('category_id') == $parentCategory->id ? 'selected' : '' }}>
+                                {{ $parentCategory->title }}
+                            </option>
+                            @foreach ($parentCategory->children as $childCategory)
+                                <option value="{{ $childCategory->id }}" {{ old('category_id') == $childCategory->id ? 'selected' : '' }}>
+                                    &nbsp;&nbsp;-- {{ $childCategory->title }}
+                                </option>
+                            @endforeach
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="title" class="form-label fw-bold">Tiêu đề <span class="text-danger">*</span></label>
                     <input type="text" class="form-control rounded" id="title" name="title" value="{{ old('title') }}" required>
                 </div>
 
                 <div class="mb-3">
-                    <label for="short_description" class="form-label fw-bold">Mô tả ngắn</label>
+                    <label for="short_description" class="form-label fw-bold">Mô tả ngắn <span class="text-danger">*</span></label>
                     <textarea class="form-control rounded" id="short_description" name="short_description" rows="3">{{ old('short_description') }}</textarea>
                 </div>
 
                 <div class="mb-3">
-                    <label for="content" class="form-label fw-bold">Nội dung</label>
+                    <label for="content" class="form-label fw-bold">Nội dung <span class="text-danger">*</span></label>
                     <textarea class="form-control rounded" id="content" name="content">{{ old('content') }}</textarea>
                 </div>
 
                 <div class="mb-3">
-                    <label for="banner" class="form-label fw-bold">Ảnh banner</label>
+                    <label for="banner" class="form-label fw-bold">Ảnh banner <span class="text-danger">*</span></label>
                     <input class="form-control" type="file" id="banner" name="banner" accept="image/*" onchange="previewBanner(event)">
                     <img id="bannerPreview" src="#" alt="Preview Banner" class="img-thumbnail rounded mt-2" style="display:none; max-width: 300px;">
                 </div>
 
                 <div class="mb-3">
-                    <label for="gallery" class="form-label fw-bold">Ảnh gallery (nhiều ảnh)</label>
+                    <label for="gallery" class="form-label fw-bold">Ảnh gallery (nhiều ảnh) <span class="text-danger">*</span></label>
                     <input class="form-control" type="file" id="gallery" name="gallery[]" accept="image/*" multiple onchange="previewGallery(event)">
                     <div id="galleryPreview" class="d-flex flex-wrap mt-2 gap-2"></div>
                 </div>

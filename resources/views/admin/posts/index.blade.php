@@ -18,15 +18,46 @@
                 @endif
 
                 <div class="mb-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
-                    <div class="d-flex align-items-center gap-2">
-                        <label for="perPageSelect" class="form-label mb-0 fw-semibold"><i class="fa fa-filter me-1"></i>Hiển thị:</label>
-                        <select id="perPageSelect" class="form-select form-select-sm" style="width: auto;">
-                            <option value="5" {{ $perPage == 5 ? 'selected' : '' }}>5</option>
-                            <option value="10" {{ $perPage == 10 ? 'selected' : '' }}>10</option>
-                            <option value="15" {{ $perPage == 15 ? 'selected' : '' }}>15</option>
-                            <option value="20" {{ $perPage == 20 ? 'selected' : '' }}>20</option>
-                        </select>
-                    </div>
+                    <form id="filterForm" method="GET" class="d-flex align-items-center gap-3 flex-wrap">
+                        <div class="d-flex align-items-center gap-2">
+                            <label for="parentCategorySelect" class="form-label mb-0 fw-semibold">Danh mục cha:</label>
+                            <select id="parentCategorySelect" name="parent_category_id" class="form-select form-select-sm" style="width: auto;">
+                                <option value="">-- Tất cả --</option>
+                                @foreach ($categories as $parentCategory)
+                                    <option value="{{ $parentCategory->id }}" {{ (string) $parentCategoryId === (string) $parentCategory->id ? 'selected' : '' }}>
+                                        {{ $parentCategory->title }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <label for="childCategorySelect" class="form-label mb-0 fw-semibold">Danh mục con:</label>
+                            <select id="childCategorySelect" name="child_category_id" class="form-select form-select-sm" style="width: auto;">
+                                <option value="">-- Tất cả --</option>
+                                @if ($parentCategoryId)
+                                    @php
+                                        $childCategories = $categories->firstWhere('id', $parentCategoryId)->children ?? collect();
+                                    @endphp
+                                    @foreach ($childCategories as $childCategory)
+                                        <option value="{{ $childCategory->id }}" {{ (string) $childCategoryId === (string) $childCategory->id ? 'selected' : '' }}>
+                                            {{ $childCategory->title }}
+                                        </option>
+                                    @endforeach
+                                @endif
+                            </select>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <label for="perPageSelect" class="form-label mb-0 fw-semibold"><i class="fa fa-filter me-1"></i>Hiển thị:</label>
+                            <select id="perPageSelect" class="form-select form-select-sm" style="width: auto;">
+                                <option value="5" {{ $perPage == 5 ? 'selected' : '' }}>5</option>
+                                <option value="10" {{ $perPage == 10 ? 'selected' : '' }}>10</option>
+                                <option value="15" {{ $perPage == 15 ? 'selected' : '' }}>15</option>
+                                <option value="20" {{ $perPage == 20 ? 'selected' : '' }}>20</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-sm rounded-pill">Lọc</button>
+                        <a href="{{ route('admin.posts.index') }}" class="btn btn-secondary btn-sm rounded-pill">Xóa lọc</a>
+                    </form>
                     <p class="mb-0 text-muted fw-medium">Tổng: {{ $posts->count() }} bài viết</p>
                 </div>
 
@@ -34,37 +65,45 @@
                     <table id="postsTable" class="table table-bordered table-hover align-middle text-center" style="font-family: 'Figtree', Arial, Helvetica, sans-serif; border-radius: 1rem; overflow: hidden;">
                         <thead class="table-light">
                             <tr>
-                                <th>Tiêu đề</th>
-                                <th>Ngày tạo</th>
-                                <th>Mô tả ngắn</th>
-                                <th>Tác giả</th>
-                                <th>Hành động</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($posts as $post)
-                            <tr>
-                                <td class="fw-semibold">{{ $post->title }}</td>
-                                <td>{{ $post->created_at->format('d/m/Y') }}</td>
-                                <td class="text-start">{!! nl2br(e($post->short_description ?? '')) !!}</td>
-                                <td>{{ $post->author->name ?? 'N/A' }}</td>
-                                <td>
-                                    <div class="d-flex justify-content-center gap-1 flex-wrap">
-                                        <a href="{{ route('posts.show', $post) }}" class="btn btn-outline-info btn-sm rounded-pill" title="Xem bài viết"><i class="fa fa-eye"></i></a>
-                                        @if(Auth::user()->role === 'admin')
-                                        <a href="{{ route('posts.edit', $post) }}" class="btn btn-outline-warning btn-sm rounded-pill" title="Sửa bài viết"><i class="fa fa-edit"></i></a>
+                        <th>Tiêu đề</th>
+                        <th>Ngày tạo</th>
+                        <th>Mô tả ngắn</th>
+                        <th>Danh mục</th>
+                        <th>Tác giả</th>
+                        <th style="display:none;">Nội dung</th>
+                        <th style="display:none;">Ngày tạo đầy đủ</th>
+                        <th style="display:none;">Người tạo</th>
+                        <th>Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($posts as $post)
+                    <tr>
+                        <td class="fw-semibold">{{ $post->title }}</td>
+                        <td>{{ $post->created_at->format('d/m/Y') }}</td>
+                        <td class="text-start">{!! nl2br(e($post->short_description ?? '')) !!}</td>
+                        <td>{{ $post->category ? $post->category->title : 'Chưa có danh mục' }}</td>
+                        <td>{{ $post->author->name ?? 'N/A' }}</td>
+                        <td style="display:none;">{{ preg_replace('/\s+/', ' ', strip_tags($post->content ?? '')) }}</td>
+                        <td style="display:none;">{{ $post->created_at }}</td>
+                        <td style="display:none;">{{ $post->author->name ?? 'N/A' }}</td>
+                        <td>
+                            <div class="d-flex justify-content-center gap-1 flex-wrap">
+                                <a href="{{ route('posts.show', $post) }}" class="btn btn-outline-info btn-sm rounded-pill" title="Xem bài viết"><i class="fa fa-eye"></i></a>
+                                @if(Auth::user()->role === 'admin')
+                                <a href="{{ route('posts.edit', $post) }}" class="btn btn-outline-warning btn-sm rounded-pill" title="Sửa bài viết"><i class="fa fa-edit"></i></a>
 <form action="{{ route('posts.destroy', $post) }}" method="POST" class="d-inline sweetalert-delete">
     @csrf
     @method('DELETE')
     <button class="btn btn-outline-danger btn-sm rounded-pill" title="Xóa bài viết"><i class="fa fa-trash"></i></button>
 </form>
-                                        @endif
-                                    </div>
-                                </td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                                @endif
+                            </div>
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
                 </div>
 
             </div>
@@ -199,7 +238,7 @@
                     text: '<i class="fa fa-file-excel"></i> Xuất Excel',
                     className: 'btn btn-success btn-sm rounded-pill shadow-sm',
                     exportOptions: {
-                        columns: ':not(:last-child)'
+                        columns: [0,1,2,3,4,5,6,7] // Include all columns except the last (actions)
                     }
                 }
             ],
@@ -220,6 +259,26 @@
         $('#perPageSelect').on('change', function () {
             var selected = parseInt($(this).val());
             table.page.len(selected).draw();
+        });
+
+        // Khi thay đổi danh mục cha, cập nhật danh mục con tương ứng
+        $('#parentCategorySelect').on('change', function () {
+            var parentId = $(this).val();
+            var childSelect = $('#childCategorySelect');
+            childSelect.empty();
+            childSelect.append('<option value="">-- Tất cả --</option>');
+
+            if (parentId) {
+                var categories = @json($categories);
+                var parentCategory = categories.find(function(cat) {
+                    return cat.id == parentId;
+                });
+                if (parentCategory && parentCategory.children) {
+                    parentCategory.children.forEach(function(child) {
+                        childSelect.append('<option value="' + child.id + '">' + child.title + '</option>');
+                    });
+                }
+            }
         });
 
         setTimeout(function () {

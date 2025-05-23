@@ -16,50 +16,52 @@
     @if($categories->isEmpty())
         <p>Chưa có danh mục nào.</p>
     @else
-        <table class="table table-bordered table-hover align-middle">
-            <thead>
-                <tr>
-                    <th>Tiêu đề</th>
-                    <th>Danh mục cha</th>
-                    <th>Tác giả</th>
-                    <th>Ảnh</th>
-                    <th>Hành động</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($categories as $category)
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover align-middle">
+                <thead>
                     <tr>
-                        <td>
-                            @if($category->parent)
-                                &nbsp;&nbsp;&nbsp;↳
-                            @endif
-                            {{ $category->title }}
-                        </td>
-                        <td>{{ $category->parent ? $category->parent->title : '-' }}</td>
-                        <td>{{ $category->author_name ?? '-' }}</td>
-                        <td>
-                            @if($category->image_path)
-                                <img src="{{ asset('storage/' . $category->image_path) }}" alt="Ảnh danh mục" style="max-width: 80px; max-height: 60px;">
-                            @else
-                                -
-                            @endif
-                        </td>
-                        <td>
-                            <a href="{{ route('categories.edit', $category) }}" class="btn btn-sm btn-warning">
-                                <i class="bi bi-pencil"></i> Sửa
-                            </a>
-                            <form action="{{ route('categories.destroy', $category) }}" method="POST" class="d-inline sweetalert-delete" onsubmit="return false;">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-sm btn-danger">
-                                    <i class="bi bi-trash"></i> Xóa
-                                </button>
-                            </form>
-                        </td>
+                        <th>Tiêu đề</th>
+                        <th>Danh mục cha</th>
+                        <th>Tác giả</th>
+                        <th>Ảnh</th>
+                        <th>Hành động</th>
                     </tr>
-                @endforeach
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @foreach($categories as $category)
+                        <tr>
+                            <td>
+                                @if($category->parent)
+                                    &nbsp;&nbsp;&nbsp;↳
+                                @endif
+                                {{ $category->title }}
+                            </td>
+                            <td>{{ $category->parent ? $category->parent->title : '-' }}</td>
+                            <td>{{ $category->author_name ?? '-' }}</td>
+                            <td>
+                                @if($category->image_path)
+                                    <img src="{{ asset('storage/' . $category->image_path) }}" alt="Ảnh danh mục" style="max-width: 80px; max-height: 60px;">
+                                @else
+                                    -
+                                @endif
+                            </td>
+                            <td>
+                                <a href="{{ route('categories.edit', $category) }}" class="btn btn-sm btn-warning">
+                                    <i class="bi bi-pencil"></i> Sửa
+                                </a>
+                                <form action="{{ route('categories.destroy', $category) }}" method="POST" class="d-inline sweetalert-delete" onsubmit="return false;">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-sm btn-danger">
+                                        <i class="bi bi-trash"></i> Xóa
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
     @endif
 </div>
 

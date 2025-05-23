@@ -16,18 +16,20 @@
         @csrf
 
         <!-- Email Address -->
-        <div class="mb-4"> {{-- Thêm mb-4 để tạo khoảng cách dưới email input --}}
-            <x-input-label for="email" :value="__('Email')" />
+        <div class="mb-4">
+            <label for="email" class="flex items-center gap-1">
+                <x-input-label :value="__('Email')" />
+                <span class="text-500" style="color:red">*</span>
+            </label>
             <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus />
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
         </div>
 
-        <div class="flex flex-col items-center mt-6 space-y-4"> {{-- Thay đổi bố cục nút bấm --}}
-            <x-primary-button class="w-full justify-center"> {{-- Làm nút bấm rộng đầy đủ và căn giữa chữ --}}
+        <div class="flex flex-col items-center mt-6 space-y-4">
+            <x-primary-button class="w-full justify-center">
                 {{ __('Gửi liên kết đặt lại mật khẩu') }}
             </x-primary-button>
 
-            {{-- Nút quay lại đăng nhập, đặt dưới nút gửi, thêm hiệu ứng chuyển động --}}
             <a href="{{ route('login') }}" class="text-sm text-gray-600 hover:text-gray-900 underline-offset-4 hover:underline transition duration-150 ease-in-out">
                 {{ __('Quay lại đăng nhập') }}
             </a>

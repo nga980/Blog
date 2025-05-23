@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Post;
+use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -15,9 +16,32 @@ class PostController extends Controller
      */
     public function index(Request $request)
     {
-        $posts = Post::latest()->get();
         $perPage = 10; // default perPage for DataTables page length
-        return view('admin.posts.index', compact('posts', 'perPage'));
+
+        // Lấy danh mục cha cùng danh mục con để truyền vào view
+        $categories = Category::with('children')->whereNull('parent_id')->get();
+
+        // Lấy tham số lọc từ request
+        $parentCategoryId = $request->input('parent_category_id');
+        $childCategoryId = $request->input('child_category_id');
+
+        // Xây dựng query lọc bài viết
+        $query = Post::query();
+
+        if ($childCategoryId) {
+            // Lọc theo danh mục con
+            $query->where('category_id', $childCategoryId);
+        } elseif ($parentCategoryId) {
+            // Lấy danh sách id các danh mục con của danh mục cha
+            $childIds = Category::where('parent_id', $parentCategoryId)->pluck('id')->toArray();
+            // Bao gồm cả danh mục cha nếu có bài viết thuộc danh mục cha
+            $categoryIds = array_merge([$parentCategoryId], $childIds);
+            $query->whereIn('category_id', $categoryIds);
+        }
+
+        $posts = $query->latest()->get();
+
+        return view('admin.posts.index', compact('posts', 'perPage', 'categories', 'parentCategoryId', 'childCategoryId'));
     }
 
     /**
@@ -35,8 +59,9 @@ class PostController extends Controller
      */
     public function create()
     {
-        // Allow all authenticated users to access create form
-        return view('admin.posts.create');
+        // Lấy danh sách danh mục cha cùng với danh mục con
+        $categories = Category::with('children')->whereNull('parent_id')->get();
+        return view('admin.posts.create', compact('categories'));
     }
 
     /**
@@ -51,6 +76,7 @@ class PostController extends Controller
             'title' => 'required|string|max:255',
             'short_description' => 'required|string|max:500',
             'content' => 'required|string',
+            'category_id' => 'required|exists:categories,id',
             'banner' => 'required|image|max:2048',
             'gallery' => 'required|array|min:2|max:5',
             'gallery.*' => 'required|image|max:2048',
@@ -60,6 +86,8 @@ class PostController extends Controller
             'short_description.required' => 'Mô tả ngắn không được để trống.',
             'short_description.max' => 'Mô tả ngắn không được vượt quá 500 ký tự.',
             'content.required' => 'Nội dung không được để trống.',
+            'category_id.required' => 'Danh mục không được để trống.',
+            'category_id.exists' => 'Danh mục không hợp lệ.',
             'banner.required' => 'Banner không được để trống.',
             'banner.image' => 'File banner phải là ảnh.',
             'banner.max' => 'Kích thước banner không được vượt quá 2MB.',
@@ -72,7 +100,7 @@ class PostController extends Controller
             'gallery.*.max' => 'Kích thước ảnh trong gallery không được vượt quá 2MB.',
         ]);
 
-        $data = $request->only(['title', 'short_description', 'content']);
+        $data = $request->only(['title', 'short_description', 'content', 'category_id']);
         $data['user_id'] = auth()->id();
         $data['author_name'] = auth()->user()->name ?? null;
 
@@ -104,6 +132,7 @@ class PostController extends Controller
      */
     public function show(Post $post)
     {
+        $post->load('category');
         $gallery = $post->gallery ? json_decode($post->gallery, true) : [];
         return view('admin.posts.show', compact('post', 'gallery'));
     }
@@ -114,7 +143,8 @@ class PostController extends Controller
     public function edit(Post $post)
     {
         $gallery = $post->gallery ? json_decode($post->gallery, true) : [];
-        return view('admin.posts.edit', compact('post', 'gallery'));
+        $categories = \App\Models\Category::with('children')->whereNull('parent_id')->get();
+        return view('admin.posts.edit', compact('post', 'gallery', 'categories'));
     }
 
     /**
@@ -126,6 +156,7 @@ class PostController extends Controller
             'title' => 'required|string|max:255',
             'short_description' => 'required|string|max:500',
             'content' => 'required|string',
+            'category_id' => 'required|exists:categories,id',
             'banner' => 'nullable|image|max:2048',
             'gallery' => 'nullable|array',
             'gallery.*' => 'image|max:2048',
@@ -136,8 +167,10 @@ class PostController extends Controller
             'short_description.required' => 'Mô tả ngắn không được để trống.',
             'short_description.max' => 'Mô tả ngắn không được vượt quá 500 ký tự.',
             'content.required' => 'Nội dung không được để trống.',
+            'category_id.required' => 'Danh mục không được để trống.',
+            'category_id.exists' => 'Danh mục không hợp lệ.',
             'banner.image' => 'File banner phải là ảnh.',
-            'banner.max' => 'Kích thước banner không được vượt quá 2MB.',
+            'banner.max' => 'Kích thước ảnh không được vượt quá 2MB.',
             'gallery.array' => 'Gallery phải là một mảng ảnh.',
             'gallery.*.image' => 'File trong gallery phải là ảnh.',
             'gallery.*.max' => 'Kích thước ảnh trong gallery không được vượt quá 2MB.',
