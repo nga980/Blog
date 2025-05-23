@@ -178,6 +178,45 @@
         transition: background-color 0.3s, color 0.3s;
     }
 
+    /* Responsive adjustments */
+    @media (max-width: 576px) {
+        .btn-outline-info.btn-sm,
+        .btn-outline-warning.btn-sm,
+        .btn-outline-danger.btn-sm {
+            width: 26px;
+            height: 26px;
+            font-size: 12px;
+            margin: 0 2px;
+        }
+
+        .btn-sm i {
+            width: 12px;
+            height: 12px;
+            font-size: 12px;
+            line-height: 12px;
+        }
+
+        .d-flex.justify-content-center.gap-1.flex-wrap {
+            gap: 4px !important;
+            justify-content: flex-start !important;
+        }
+
+        /* Additional responsive fixes */
+        .table-responsive {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        #postsTable {
+            width: 100% !important;
+            min-width: 600px;
+        }
+
+        .card-body {
+            padding: 1rem !important;
+        }
+    }
+
     .btn-outline-info.btn-sm {
         color: #0d6efd;
         border-color: #0d6efd;
@@ -223,7 +262,6 @@
         text-align: center;
     }
 </style>
-
 
 <script>
     $(document).ready(function () {
