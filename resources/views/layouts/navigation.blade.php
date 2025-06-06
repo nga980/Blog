@@ -15,9 +15,15 @@
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Tổng quan') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('posts.index')" :active="request()->routeIs('posts.index')">
-                        {{ __('Quản lý bài viết') }}
-                    </x-nav-link>
+                    @if(Auth::check() && Auth::user()->isAdmin())
+                        <x-nav-link :href="route('admin.posts.index')" :active="request()->routeIs('admin.posts.index')">
+                            {{ __('Quản lý bài viết') }}
+                        </x-nav-link>
+                    @else
+                        <x-nav-link :href="route('posts.index')" :active="request()->routeIs('posts.index')">
+                            {{ __('Quản lý bài viết') }}
+                        </x-nav-link>
+                    @endif
                     <x-nav-link :href="route('categories.index')" :active="request()->routeIs('categories.index')">
                         {{ __('Quản lý danh mục') }}
                     </x-nav-link>

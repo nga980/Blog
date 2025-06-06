@@ -26,10 +26,10 @@
         <!-- Quản lý bài viết -->
         <div class="card shadow-sm border-0 rounded-4 mb-4 p-3">
             <div class="card-body d-flex justify-content-center flex-wrap gap-2">
-                <a href="{{ route('posts.index') }}" class="btn btn-outline-primary shadow-sm px-4 py-2">
+                <a href="{{ route('admin.posts.index') }}" class="btn btn-outline-primary shadow-sm px-4 py-2">
                     <i class="fas fa-list me-2"></i> Quản lý bài viết
                 </a>
-                <a href="{{ route('posts.create') }}" class="btn btn-outline-success shadow-sm px-4 py-2">
+                <a href="{{ route('admin.posts.create') }}" class="btn btn-outline-success shadow-sm px-4 py-2">
                     <i class="fas fa-plus me-2"></i> Thêm bài viết
                 </a>
             </div>

@@ -53,7 +53,7 @@
             </div>
 
             <div class="text-end">
-                <a href="{{ route('posts.index') }}" class="btn btn-outline-secondary btn-sm">
+                <a href="{{ route('admin.posts.index') }}" class="btn btn-outline-secondary btn-sm">
                     ⬅ Quay lại danh sách
                 </a>
             </div>

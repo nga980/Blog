@@ -17,7 +17,7 @@
                 </div>
             @endif
 
-<form action="{{ route('posts.update', $post) }}" method="POST" enctype="multipart/form-data" class="sweetalert-confirm-nochange">
+<form action="{{ route('admin.posts.update', $post) }}" method="POST" enctype="multipart/form-data" class="sweetalert-confirm-nochange">
     @csrf
     @method('PUT')
 
@@ -82,7 +82,7 @@
                 </div>
 
                 <div class="mt-4 d-flex justify-content-between">
-                    <a href="{{ route('posts.index') }}" class="btn btn-secondary">
+                    <a href="{{ route('admin.posts.index') }}" class="btn btn-secondary">
                         <i class="bi bi-arrow-left"></i> Quay lại
                     </a>
                     <button type="submit" class="btn btn-primary">

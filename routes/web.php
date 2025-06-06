@@ -3,16 +3,22 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
-});
-
 use App\Models\Post;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
 use Illuminate\Support\Facades\Auth;
+
+use App\Http\Controllers\UserHomeController;
+use App\Http\Controllers\AdminDashboardController;
+use App\Http\Controllers\PostController;
+use App\Http\Controllers\CategoryController;
+use App\Http\Middleware\AdminMiddleware;
+
+Route::get('/', function () {
+    return view('welcome');
+});
 
 Route::get('/dashboard', function () {
     $user = Auth::user();
@@ -49,49 +55,38 @@ Route::get('/dashboard', function () {
             'userGrowth', 'postGrowth', 'perPage', 'isAdmin'
         ));
     }
-    return redirect()->route('posts.index');
+    return redirect()->route('user.home');
 })->name('dashboard');
 
 Route::middleware('auth')->group(function () {
+    Route::get('/user/home', [UserHomeController::class, 'index'])->name('user.home');
+
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    // Allow normal users to create posts
-    Route::get('/posts/create', [App\Http\Controllers\PostController::class, 'create'])->name('posts.create');
-    Route::post('/posts', [App\Http\Controllers\PostController::class, 'store'])->name('posts.store');
+    // Only allow normal users to view posts index
+    Route::get('/posts', [PostController::class, 'userIndex'])->name('posts.index');
 
-    // Add posts index route for normal users
-    Route::get('/posts', [App\Http\Controllers\PostController::class, 'userIndex'])->name('posts.index');
+    // Add post detail route for normal users
+    Route::get('/posts/{post}', [PostController::class, 'userShow'])->name('posts.show');
+
+    // Add categories index route for normal users
+    Route::get('/categories', [CategoryController::class, 'userIndex'])->name('categories.index');
+
+    // Add category detail route for normal users
+    Route::get('/categories/{category}', [CategoryController::class, 'userShow'])->name('categories.show');
 });
-
-use App\Http\Controllers\AdminDashboardController;
-
-use App\Http\Controllers\PostController;
-
-use App\Http\Middleware\AdminMiddleware;
 
 Route::middleware(['auth', AdminMiddleware::class])->prefix('admin')->group(function () {
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
     Route::get('/dashboard/export-posts', [AdminDashboardController::class, 'exportPosts'])->name('admin.dashboard.exportPosts');
 
-    // Add admin posts resource routes
+    // Admin posts resource routes
     Route::resource('posts', PostController::class, ['as' => 'admin']);
-});
 
-// Move posts resource routes outside admin middleware group to allow both normal users and admins access
-Route::middleware('auth')->group(function () {
-    Route::resource('posts', PostController::class);
-});
-
-require __DIR__.'/auth.php';
-
-use App\Http\Controllers\CategoryController;
-
-Route::middleware(['auth', AdminMiddleware::class])->prefix('admin')->group(function () {
+    // Admin categories resource routes
     Route::resource('categories', CategoryController::class, ['as' => 'admin']);
 });
 
-Route::middleware('auth')->group(function () {
-    Route::resource('categories', CategoryController::class);
-});
+require __DIR__.'/auth.php';

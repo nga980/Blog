@@ -16,7 +16,7 @@
                 </div>
             @endif
 
-            <form action="{{ route('posts.store') }}" method="POST" enctype="multipart/form-data" class="sweetalert-confirm-nochange">
+            <form action="{{ route('admin.posts.store') }}" method="POST" enctype="multipart/form-data" class="sweetalert-confirm-nochange">
                 @csrf
 
                 <div class="mb-3">
@@ -65,7 +65,7 @@
 
                 <div class="d-flex gap-2 mt-4">
                     <button type="submit" class="btn btn-primary px-4 shadow-sm">💾 Lưu</button>
-                    <a href="{{ route('posts.index') }}" class="btn btn-secondary px-4 shadow-sm">↩️ Quay lại</a>
+                    <a href="{{ route('admin.posts.index') }}" class="btn btn-secondary px-4 shadow-sm">↩️ Quay lại</a>
                 </div>
             </form>
         </div>

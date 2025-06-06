@@ -8,14 +8,19 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException; // Thêm dòng này
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class PostController extends Controller
 {
+    use AuthorizesRequests;
     /**
      * Display a listing of the posts for admin.
      */
     public function index(Request $request)
     {
+        // Remove $this->authorize('admin'); because no 'admin' gate defined
+        // $this->authorize('admin'); // Only admin can access
+
         $perPage = 10; // default perPage for DataTables page length
 
         // Lấy danh mục cha cùng danh mục con để truyền vào view
@@ -59,6 +64,9 @@ class PostController extends Controller
      */
     public function create()
     {
+        // Remove $this->authorize('admin'); because no 'admin' gate defined
+        // $this->authorize('admin'); // Only admin can access
+
         // Lấy danh sách danh mục cha cùng với danh mục con
         $categories = Category::with('children')->whereNull('parent_id')->get();
         return view('admin.posts.create', compact('categories'));
@@ -69,6 +77,8 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
+        $this->authorize('admin'); // Only admin can access
+
         // Xóa logic try-catch và lưu tạm file. Laravel sẽ tự động redirect back và giữ old input.
         // Đối với file upload, người dùng sẽ phải chọn lại file nếu validation fail.
         // Việc lưu tạm file như logic cũ có thể gây lỗi hoặc không an toàn.
@@ -120,10 +130,12 @@ class PostController extends Controller
             $post->save();
         }
 
+        $queryParams = $request->only(['parent_category_id', 'child_category_id']);
+
         if (auth()->user()->isAdmin()) {
-            return redirect()->route('admin.posts.index')->with('swal_success', 'Bài viết đã được tạo thành công.');
+            return redirect()->route('admin.posts.index', $queryParams)->with('swal_success', 'Bài viết đã được tạo thành công.');
         } else {
-            return redirect()->route('posts.index')->with('swal_success', 'Bài viết đã được tạo thành công.');
+            return redirect()->route('posts.index', $queryParams)->with('swal_success', 'Bài viết đã được tạo thành công.');
         }
     }
 
@@ -132,16 +144,43 @@ class PostController extends Controller
      */
     public function show(Post $post)
     {
+        $this->authorize('admin'); // Only admin can access
+
         $post->load('category');
         $gallery = $post->gallery ? json_decode($post->gallery, true) : [];
         return view('admin.posts.show', compact('post', 'gallery'));
     }
 
     /**
+     * Display the specified post for normal users.
+     */
+public function userShow(Post $post)
+{
+    $post->load('category');
+
+    // Tách nội dung bài viết thành các phần, giả sử tách theo 2 dòng xuống dòng
+    $contentSections = preg_split('/\n\s*\n/', $post->content);
+
+    $gallery = $post->gallery ? json_decode($post->gallery, true) : [];
+
+    // Lấy 2 bài viết tương tự cùng danh mục, không lấy bài hiện tại
+    $similarPosts = Post::where('category_id', $post->category_id)
+        ->where('id', '!=', $post->id)
+        ->latest()
+        ->take(2)
+        ->get();
+
+    return view('user.posts.show', compact('post', 'gallery', 'contentSections', 'similarPosts'));
+}
+
+    /**
      * Show the form for editing the specified post.
      */
     public function edit(Post $post)
     {
+        // Remove $this->authorize('admin'); because no 'admin' gate defined
+        // $this->authorize('admin'); // Only admin can access
+
         $gallery = $post->gallery ? json_decode($post->gallery, true) : [];
         $categories = \App\Models\Category::with('children')->whereNull('parent_id')->get();
         return view('admin.posts.edit', compact('post', 'gallery', 'categories'));
@@ -152,6 +191,9 @@ class PostController extends Controller
      */
     public function update(Request $request, Post $post)
     {
+        // Remove $this->authorize('admin'); because no 'admin' gate defined
+        // $this->authorize('admin'); // Only admin can access
+
         $request->validate([
             'title' => 'required|string|max:255',
             'short_description' => 'required|string|max:500',
@@ -233,11 +275,13 @@ class PostController extends Controller
 
         $post->update($data);
 
+        $queryParams = $request->only(['parent_category_id', 'child_category_id']);
+
         // Redirect dựa trên quyền người dùng
         if (auth()->user()->isAdmin()) {
-            return redirect()->route('admin.posts.index')->with('swal_success', 'Bài viết đã được cập nhật thành công.');
+            return redirect()->route('admin.posts.index', $queryParams)->with('swal_success', 'Bài viết đã được cập nhật thành công.');
         } else {
-            return redirect()->route('posts.index')->with('swal_success', 'Bài viết đã được cập nhật thành công.');
+            return redirect()->route('posts.index', $queryParams)->with('swal_success', 'Bài viết đã được cập nhật thành công.');
         }
     }
 
@@ -246,6 +290,9 @@ class PostController extends Controller
      */
     public function destroy(Post $post)
     {
+        // Remove authorization check to avoid 403 if no admin gate defined
+        // $this->authorize('admin'); // Only admin can access
+
         if ($post->banner) {
             Storage::disk('public')->delete($post->banner);
         }

@@ -6,7 +6,7 @@
         <div class="card shadow rounded-4 border-0">
             <div class="card-header d-flex justify-content-between align-items-center text-white rounded-top-4 px-4 py-3" style="background: linear-gradient(to right, #007bff, #0056b3);">
                 <h4 class="mb-0 fw-semibold"><i class="fa fa-list-alt me-2"></i>Danh sách bài viết</h4>
-                <a href="{{ route('posts.create') }}" class="btn btn-success btn-sm rounded-pill shadow-sm">
+                <a href="{{ route('admin.posts.create') }}" class="btn btn-success btn-sm rounded-pill shadow-sm">
                     <i class="fa fa-plus me-1"></i> Thêm bài viết
                 </a>
             </div>
@@ -89,11 +89,11 @@
                         <td style="display:none;">{{ $post->author->name ?? 'N/A' }}</td>
                         <td>
                             <div class="d-flex justify-content-center gap-1 flex-wrap">
-                                <a href="{{ route('posts.show', $post) }}" class="btn btn-outline-info btn-sm rounded-pill" title="Xem bài viết"><i class="fa fa-eye"></i></a>
+                                <a href="{{ route('admin.posts.show', $post) }}" class="btn btn-outline-info btn-sm rounded-pill" title="Xem bài viết"><i class="fa fa-eye"></i></a>
                                 @if(Auth::user()->role === 'admin')
-                                <a href="{{ route('posts.edit', $post) }}" class="btn btn-outline-warning btn-sm rounded-pill" title="Sửa bài viết"><i class="fa fa-edit"></i></a>
-<form action="{{ route('posts.destroy', $post) }}" method="POST" class="d-inline sweetalert-delete">
-    @csrf
+                                <a href="{{ route('admin.posts.edit', $post) }}" class="btn btn-outline-warning btn-sm rounded-pill" title="Sửa bài viết"><i class="fa fa-edit"></i></a>
+                                <form action="{{ route('admin.posts.destroy', $post) }}" method="POST" class="d-inline sweetalert-delete">
+                                    @csrf
     @method('DELETE')
     <button class="btn btn-outline-danger btn-sm rounded-pill" title="Xóa bài viết"><i class="fa fa-trash"></i></button>
 </form>
