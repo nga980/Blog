@@ -1,10 +1,10 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('content')
 <div class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h1 class="h4 fw-bold">📂 Danh mục</h1>
-        <a href="{{ route('categories.create') }}" class="btn btn-primary">
+        <a href="{{ route('admin.categories.create') }}" class="btn btn-primary">
             <i class="bi bi-plus"></i> Thêm danh mục mới
         </a>
     </div>
@@ -46,10 +46,10 @@
                                 @endif
                             </td>
                             <td>
-                                <a href="{{ route('categories.edit', $category) }}" class="btn btn-sm btn-warning">
+                                <a href="{{ route('admin.categories.edit', $category) }}" class="btn btn-sm btn-warning">
                                     <i class="bi bi-pencil"></i> Sửa
                                 </a>
-                                <form action="{{ route('categories.destroy', $category) }}" method="POST" class="d-inline sweetalert-delete" onsubmit="return false;">
+                                <form action="{{ route('admin.categories.destroy', $category) }}" method="POST" class="d-inline sweetalert-delete" onsubmit="return false;">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-sm btn-danger">

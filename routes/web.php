@@ -14,6 +14,7 @@ use App\Http\Controllers\UserHomeController;
 use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
 use App\Http\Middleware\AdminMiddleware;
 
 Route::get('/', function () {
@@ -86,7 +87,7 @@ Route::middleware(['auth', AdminMiddleware::class])->prefix('admin')->group(func
     Route::resource('posts', PostController::class, ['as' => 'admin']);
 
     // Admin categories resource routes
-    Route::resource('categories', CategoryController::class, ['as' => 'admin']);
+    Route::resource('categories', AdminCategoryController::class, ['as' => 'admin']);
 });
 
 require __DIR__.'/auth.php';

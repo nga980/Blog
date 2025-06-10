@@ -16,7 +16,7 @@
                 </div>
             @endif
 
-            <form action="{{ route('categories.update', $category) }}" method="POST" enctype="multipart/form-data" class="sweetalert-confirm-nochange">
+            <form action="{{ route('admin.categories.update', $category) }}" method="POST" enctype="multipart/form-data" class="sweetalert-confirm-nochange">
                 @csrf
                 @method('PUT')
 
@@ -74,7 +74,7 @@
 
                 <div class="d-flex gap-2 mt-4">
                     <button type="submit" class="btn btn-primary px-4 shadow-sm">💾 Lưu</button>
-                    <a href="{{ route('categories.index') }}" class="btn btn-secondary px-4 shadow-sm">↩️ Quay lại</a>
+                    <a href="{{ route('admin.categories.index') }}" class="btn btn-secondary px-4 shadow-sm">↩️ Quay lại</a>
                 </div>
             </form>
         </div>

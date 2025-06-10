@@ -10,11 +10,17 @@
         @foreach ($posts as $post)
         <div class="post-link text-decoration-none text-dark" style="width: 600px; position: relative; cursor: pointer;" onclick="window.location='{{ route('posts.show', $post) }}'">
             <div class="card rounded shadow-effect overflow-hidden position-relative">
+                @if($post->category)
                 <a href="{{ route('categories.show', $post->category->id) }}" class="category-link text-decoration-none" style="position: absolute; top: 0; left: 0; z-index: 10; display: inline-block;">
                     <span class="m-2 badge bg-primary text-white small category-badge">
-                        {{ $post->category->title ?? 'Chưa phân loại' }}
+                        {{ $post->category->title }}
                     </span>
                 </a>
+                @else
+                <span class="m-2 badge bg-secondary text-white small category-badge" style="position: absolute; top: 0; left: 0; z-index: 10; display: inline-block;">
+                    Chưa phân loại
+                </span>
+                @endif
 
                 <div class="card-body d-flex flex-column align-items-center pt-4">
                     <h5 class="card-title fw-bold text-center mb-2" style="min-height: 2.5em;">{{ $post->title }}</h5>

@@ -34,7 +34,7 @@
             <h4>Bài viết thuộc danh mục</h4>
             <div class="list-group">
                 @foreach ($category->posts as $post)
-                    <a href="{{ route('admin.posts.show', $post->id) }}" class="list-group-item list-group-item-action d-flex align-items-center">
+                    <a href="{{ route('posts.show', $post->id) }}" class="list-group-item list-group-item-action d-flex align-items-center">
                         @if ($post->banner)
                             <img src="{{ asset('storage/' . $post->banner) }}" alt="{{ $post->title }}" class="me-3" style="width: 100px; height: 70px; object-fit: cover; border-radius: 0.25rem;">
                         @else

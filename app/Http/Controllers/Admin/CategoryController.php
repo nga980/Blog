@@ -15,7 +15,7 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        $this->authorize('admin'); // Only admin can access
+        // $this->authorize('admin'); // Only admin can access
 
         $categories = Category::with('parent')->orderBy('parent_id')->orderBy('title')->get();
 
@@ -27,7 +27,7 @@ class CategoryController extends Controller
      */
     public function create()
     {
-        $this->authorize('admin'); // Only admin can access
+        // $this->authorize('admin'); // Only admin can access
 
         $parentCategories = Category::whereNull('parent_id')->orderBy('title')->get();
 
@@ -39,7 +39,7 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
-        $this->authorize('admin'); // Only admin can access
+        // $this->authorize('admin'); // Only admin can access
 
         $validated = $request->validate([
             'parent_id' => ['nullable', 'exists:categories,id'],
@@ -65,7 +65,7 @@ class CategoryController extends Controller
      */
     public function edit(Category $category)
     {
-        $this->authorize('admin'); // Only admin can access
+        // $this->authorize('admin'); // Only admin can access
 
         $parentCategories = Category::whereNull('parent_id')->where('id', '!=', $category->id)->orderBy('title')->get();
 
@@ -77,7 +77,7 @@ class CategoryController extends Controller
      */
     public function update(Request $request, Category $category)
     {
-        $this->authorize('admin'); // Only admin can access
+        // $this->authorize('admin'); // Only admin can access
 
         $validated = $request->validate([
             'parent_id' => ['nullable', 'exists:categories,id', Rule::notIn([$category->id])],
@@ -115,7 +115,7 @@ class CategoryController extends Controller
      */
     public function destroy(Category $category)
     {
-        $this->authorize('admin'); // Only admin can access
+        // $this->authorize('admin'); // Only admin can access
 
         if ($category->image_path) {
             Storage::disk('public')->delete($category->image_path);

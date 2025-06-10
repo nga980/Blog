@@ -25,11 +25,17 @@
                 <h1 class="mb-3" style="font-size: 2.25rem; font-weight: 500;">{{ $post->title }}</h1>
                 <p class="text-muted">
                     <strong>Thể loại:</strong>
-                    <a href="{{ route('categories.show', $post->category->id) }}" class="text-decoration-none">
-                        <span class="badge bg-primary fs-6 ms-1 category-badge">
-                            {{ $post->category->title ?? 'Chưa phân loại' }}
-                        </span>
-                    </a>
+                @if($post->category)
+                <a href="{{ route('categories.show', $post->category->id) }}" class="text-decoration-none">
+                    <span class="badge bg-primary fs-6 ms-1 category-badge">
+                        {{ $post->category->title }}
+                    </span>
+                </a>
+                @else
+                <span class="badge bg-secondary fs-6 ms-1 category-badge">
+                    Chưa phân loại
+                </span>
+                @endif
                 </p>
                 @if($post->created_at)
                 <p class="text-muted small"><em>Đăng lúc: {{ $post->created_at->format('H:i, d/m/Y') }}</em></p>

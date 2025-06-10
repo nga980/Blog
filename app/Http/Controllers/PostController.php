@@ -77,7 +77,7 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        $this->authorize('admin'); // Only admin can access
+        // $this->authorize('admin'); // Only admin can access
 
         // Xóa logic try-catch và lưu tạm file. Laravel sẽ tự động redirect back và giữ old input.
         // Đối với file upload, người dùng sẽ phải chọn lại file nếu validation fail.
@@ -144,7 +144,7 @@ class PostController extends Controller
      */
     public function show(Post $post)
     {
-        $this->authorize('admin'); // Only admin can access
+        // $this->authorize('admin'); // Only admin can access
 
         $post->load('category');
         $gallery = $post->gallery ? json_decode($post->gallery, true) : [];

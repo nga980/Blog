@@ -22,7 +22,11 @@
 </head>
     <body class="font-sans antialiased">
         <div class="min-h-screen bg-gray-100">
-            @include('layouts.navigation')
+@if(auth()->check() && auth()->user()->role === 'admin')
+    @include('layouts.navigation-admin')
+@else
+    @include('layouts.navigation-user')
+@endif
 
             <!-- Page Heading -->
             @isset($header)
